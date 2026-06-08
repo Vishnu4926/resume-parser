@@ -22,6 +22,14 @@ from services.embedding_service import (
     create_embedding
 )
 
+from services.rag_service import (
+   recruiter_chat
+)
+
+from schemas.chat_schema import ChatRequest
+
+
+
 router = APIRouter()
 
 
@@ -89,3 +97,15 @@ def get_single_job(
         )
 
     return job
+
+@router.post("/recruiter-chat")
+def chat_with_candidates(
+    request: ChatRequest,
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    return recruiter_chat(
+        request.question,
+        db
+    )

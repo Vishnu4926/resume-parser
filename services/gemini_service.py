@@ -1,4 +1,8 @@
 # services/gemini_service.py
+
+from utils.logger import logger
+from utils.metrics import Timer
+
 import json
 import vertexai
 
@@ -26,6 +30,10 @@ def parse_resume(file_bytes):
     Parse resume PDF using Gemini and return structured JSON.
     """
 
+    logger.info(
+        "Resume parsing started"
+    )
+
     try:
 
         document = Part.from_data(
@@ -33,29 +41,35 @@ def parse_resume(file_bytes):
             mime_type="application/pdf"
         )
 
-        response = model.generate_content([
-            document,
-            """
-            Extract resume information and return ONLY valid JSON.
+        with Timer() as timer:
 
-            Schema:
+            response = model.generate_content([
+                document,
+                """
+                Extract resume information and return ONLY valid JSON.
 
-            {
-              "full_name": "",
-              "email": "",
-              "phone": "",
-              "skills": [],
-              "education": [],
-              "experience": []
-            }
+                Schema:
 
-            Rules:
-            - Return valid JSON only
-            - No markdown
-            - No explanations
-            - No extra text
-            """
-        ])
+                {
+                  "full_name": "",
+                  "email": "",
+                  "phone": "",
+                  "skills": [],
+                  "education": [],
+                  "experience": []
+                }
+
+                Rules:
+                - Return valid JSON only
+                - No markdown
+                - No explanations
+                - No extra text
+                """
+            ])
+
+        logger.info(
+            f"Resume parsing time: {timer.elapsed:.2f}s"
+        )
 
         cleaned_text = response.text.strip()
 
@@ -66,7 +80,13 @@ def parse_resume(file_bytes):
             .strip()
         )
 
-        parsed_json = json.loads(cleaned_text)
+        parsed_json = json.loads(
+            cleaned_text
+        )
+
+        logger.info(
+            "Resume parsing completed"
+        )
 
         return {
             "status": "success",
@@ -74,12 +94,22 @@ def parse_resume(file_bytes):
         }
 
     except json.JSONDecodeError:
+
+        logger.error(
+            "Gemini returned invalid JSON"
+        )
+
         return {
             "status": "error",
             "message": "Gemini returned invalid JSON."
         }
 
     except Exception as e:
+
+        logger.error(
+            f"Resume parsing failed: {e}"
+        )
+
         return {
             "status": "error",
             "message": str(e)

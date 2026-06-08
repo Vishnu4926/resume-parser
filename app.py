@@ -1,3 +1,14 @@
+from middleware import (
+    log_requests
+)
+
+
+from api.evaluation_routes import (
+    router as evaluation_router
+)
+
+from models.resume_chunk import ResumeChunk
+
 from models.job_posting import JobPosting
 
 from api.job_routes import (
@@ -26,6 +37,8 @@ from models.job import Job
 
 Base.metadata.create_all(bind=engine)
 
+#app = FastAPI(...)
+
 app = FastAPI(
     title="Resume Parser API"
 )
@@ -45,4 +58,12 @@ app.include_router(auth_router)
 
 app.include_router(
     job_router
+)
+
+app.include_router(
+    evaluation_router
+)
+
+app.middleware("http")(
+    log_requests
 )

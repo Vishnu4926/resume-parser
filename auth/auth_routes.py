@@ -1,4 +1,7 @@
 from fastapi import APIRouter
+
+from utils.logger import logger
+
 from database.connection import SessionLocal
 
 from schemas.user_schema import (
@@ -21,6 +24,7 @@ from auth.jwt_handler import (
 )
 
 router = APIRouter()
+
 
 @router.post("/register")
 def register(user: UserCreate):
@@ -51,6 +55,10 @@ def register(user: UserCreate):
             hashed_password
         )
 
+        logger.info(
+            f"User registered: {new_user.email}"
+        )
+
         return {
             "message": "User created successfully",
             "user_id": new_user.id
@@ -58,6 +66,7 @@ def register(user: UserCreate):
 
     finally:
         db.close()
+
 
 @router.post("/login")
 def login(user: UserLogin):
@@ -87,6 +96,10 @@ def login(user: UserLogin):
             return {
                 "message": "Invalid credentials"
             }
+
+        logger.info(
+            f"User logged in: {db_user.email}"
+        )
 
         token = create_access_token(
             {

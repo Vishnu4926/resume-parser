@@ -1,3 +1,7 @@
+from services.chunk_service import (
+    create_resume_chunks
+)
+
 from utils.matching import calculate_match_score
 
 import json
@@ -123,6 +127,11 @@ async def parse_resume_endpoint(
                     json.dumps(embedding)
                 )
 
+                create_resume_chunks(
+                    db,
+                    saved_resume
+                )
+
                 result["database_id"] = saved_resume.id
 
             except Exception as e:
@@ -142,8 +151,6 @@ async def parse_resume_endpoint(
                 status_code=400,
                 detail=f"Parsing status returned failure: {result}"
             )
-
-
 
         result["file_url"] = file_url
         return result

@@ -1,3 +1,6 @@
+from utils.metrics import Timer
+from utils.logger import logger
+
 import vertexai
 
 from vertexai.language_models import (
@@ -10,6 +13,10 @@ LOCATION = "us-central1"
 
 def create_embedding(text: str):
 
+    logger.info(
+        "Creating embedding"
+    )
+
     vertexai.init(
         project=PROJECT_ID,
         location=LOCATION
@@ -19,9 +26,19 @@ def create_embedding(text: str):
         "text-embedding-005"
     )
 
-    embedding = model.get_embeddings(
-        [text]
-    )[0]
+    with Timer() as timer:
+
+        embedding = model.get_embeddings(
+            [text]
+        )[0]
+
+    logger.info(
+        f"Embedding time: {timer.elapsed:.2f}s"
+    )
+
+    logger.info(
+        "Embedding created"
+    )
 
     return embedding.values
 
