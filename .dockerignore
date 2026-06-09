@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+vertex_env/
+.env
+
+.git
+.github
+
+.vscode
+
+*.log
