@@ -125,7 +125,7 @@ def match_resume_to_job(
     job_description
 ):
 
-model = get_model()
+    model = get_model()
 
     prompt = f"""
     Compare this resume with the job description.
