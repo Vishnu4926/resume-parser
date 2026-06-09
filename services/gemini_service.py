@@ -17,12 +17,14 @@ from config.settings import (
     MODEL_NAME
 )
 
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION
-)
+def get_model():
 
-model = GenerativeModel(MODEL_NAME)
+    vertexai.init(
+        project=PROJECT_ID,
+        location=LOCATION
+    )
+
+    model = GenerativeModel(MODEL_NAME)
 
 
 def parse_resume(file_bytes):
@@ -42,6 +44,8 @@ def parse_resume(file_bytes):
         )
 
         with Timer() as timer:
+
+            model = get_model()
 
             response = model.generate_content([
                 document,
@@ -120,6 +124,9 @@ def match_resume_to_job(
     resume_data,
     job_description
 ):
+
+model = get_model()
+
     prompt = f"""
     Compare this resume with the job description.
 

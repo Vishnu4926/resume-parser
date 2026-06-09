@@ -16,7 +16,7 @@ from services.embedding_service import (
 )
 
 from services.gemini_service import (
-    model
+    get_model
 )
 
 from utils.vector_utils import (
@@ -127,6 +127,8 @@ Candidates:
 """
 
     with Timer() as timer:
+
+        model = get_model()
 
         response = model.generate_content(
             prompt
