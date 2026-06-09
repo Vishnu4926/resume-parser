@@ -13,4 +13,7 @@ MODEL_NAME = os.getenv("MODEL_NAME")
 
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "sqlite:///./resumes.db"
+)
