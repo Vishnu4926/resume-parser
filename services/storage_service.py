@@ -1,19 +1,33 @@
 from datetime import timedelta
-from google.cloud import storage
 
 from google.cloud import storage
 
-from config.settings import BUCKET_NAME
+from config.settings import (
+    BUCKET_NAME
+)
 
-client = storage.Client()
+from utils.logger import logger
 
-bucket = client.bucket(BUCKET_NAME)
+
+def get_bucket():
+
+    client = storage.Client()
+
+    return client.bucket(
+        BUCKET_NAME
+    )
 
 
 def upload_resume(
     file_bytes,
     filename
 ):
+
+    logger.info(
+        f"Uploading resume {filename}"
+    )
+
+    bucket = get_bucket()
 
     blob = bucket.blob(
         f"resumes/{filename}"
@@ -26,16 +40,21 @@ def upload_resume(
 
     return blob.public_url
 
-def generate_signed_url(filename):
+
+def generate_signed_url(
+    filename
+):
+
+    bucket = get_bucket()
 
     blob = bucket.blob(
         f"resumes/{filename}"
     )
 
-    url = blob.generate_signed_url(
+    return blob.generate_signed_url(
         version="v4",
-        expiration=timedelta(minutes=15),
+        expiration=timedelta(
+            minutes=15
+        ),
         method="GET"
     )
-
-    return url
